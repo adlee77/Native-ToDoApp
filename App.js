@@ -1,6 +1,8 @@
 import React from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, Text, View, FlatList } from 'react-native';
 import Header from './Components/Header';
+import InputBar from './Components/InputBar';
+import TodoItem from './Components/TodoItem';
 
 export default class App extends React.Component {
   constructor(props){
@@ -13,13 +15,43 @@ export default class App extends React.Component {
       ]
     }
   }
+
+  addNewTodo () {
+    let todos = this.state.todoArray;
+    todos.unshift({
+      id: todos.length + 1,
+      todo: this.state.todoInput,
+      done: false
+    })
+
+    this.setState({
+      todoArray,
+      todoInput: ''
+    })
+  }
+
   render() {
     const statusbar = (Platform.OS == "ios") ? <View style={styles.statusbar}></View> : <View></View>;
 
   return (
     <View style={styles.container}>
       {statusbar}
-      <Header />      
+      <Header title="Hello World"/>     
+      <InputBar 
+        textChange={todoInput => this.setState({ todoInput })} 
+        addNewTodo={() => this.addNewTodo() }
+      />
+      <FlatList 
+        data={this.state.todoArray} 
+        extraData={this.state}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={ ({item, index}) => {
+          return (
+            <TodoItem todoItem={item}/>
+          )
+        }}
+      />
+      <Text>{this.state.todoInput}</Text>
     </View>
   );
 }
@@ -31,7 +63,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff'
   },
   statusbar: {
-    backgroundColor: 'red',
-    height: 20
+    backgroundColor: 'black',
+    height: 30
   }
 });
