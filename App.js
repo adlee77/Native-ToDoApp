@@ -20,14 +20,32 @@ export default class App extends React.Component {
     let todos = this.state.todoArray;
     todos.unshift({
       id: todos.length + 1,
-      todo: this.state.todoInput,
+      title: this.state.todoInput,
       done: false
     })
 
     this.setState({
-      todoArray,
+      todos,
       todoInput: ''
     })
+  }
+
+  toggleDone (item) {
+    let todoArray = this.state.todoArray;
+    todoArray = todoArray.map((todo) => {
+      if (todo.id == item.id) {
+        todo.done = !todo.done;
+      }
+      return todo;
+    })
+    this.setState({todoArray});
+  }
+
+  removeTodo (item) {
+    let todoArray = this.state.todoArray;
+    todoArray = todoArray.filter((todo) => todo.id !== item.id);
+
+    this.setState({todoArray});
   }
 
   render() {
@@ -36,10 +54,11 @@ export default class App extends React.Component {
   return (
     <View style={styles.container}>
       {statusbar}
-      <Header title="Hello World"/>     
+      <Header title="TODO APP"/>     
       <InputBar 
         textChange={todoInput => this.setState({ todoInput })} 
         addNewTodo={() => this.addNewTodo() }
+        todoInput={this.state.todoInput}
       />
       <FlatList 
         data={this.state.todoArray} 
@@ -47,7 +66,7 @@ export default class App extends React.Component {
         keyExtractor={(item, index) => index.toString()}
         renderItem={ ({item, index}) => {
           return (
-            <TodoItem todoItem={item}/>
+            <TodoItem todoItem={item} toggleDone={() => this.toggleDone(item)} removeTodo={() => this.removeTodo(item)}/>
           )
         }}
       />
